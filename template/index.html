@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% block body %}
+    <p style="font-family:Kanit, serif;font-weight: 600;font-style: normal;" class="mt-4 ms-5">Add Expense<i class="fa-solid fa-folder-plus ms-2" style="color: #e01b24;"></i></p>
+    <form class="shadow-lg m-5" method="POST">
+        {% csrf_token %}
+        <div  class="form-container p-5 d-flex">
+            <div class="mx-5 box">
+                <div class="mb-3">
+                    <label class="fw-bold">Expense Name</label>
+                </div>
+                <div class="border inp">{{expense_form.name}}</div>
+            </div>
+            <div class="mx-5 box">
+                <div class="mb-3">
+                    <label class="fw-bold">Expense Amount</label>
+                </div>
+                <div class="border inp">{{expense_form.amount}}</div>
+            </div>
+            <div class="mx-5 box">
+                <div class="mb-3">
+                    <label class="fw-bold">Expense Category</label>
+                </div>
+                <div class="border inp">{{expense_form.category}}</div>
+            </div>
+            <div class="mx-5 mt-4 box">
+                <button class="btn btn-success px-3 py-2 rounded text-white fw-bold">Add</button>
+            </div>
+        </div>
+    </form>
+    <p style="font-family:Kanit, serif;font-weight: 600;font-style: normal;" class="mt-4 ms-5"> Expenses<i class="fa-solid fa-file-invoice-dollar ms-2" style="color: #e01b24;"></i></p>
+    <div class="shadow m-5 rounded">
+        <div class="expense-header d-flex flex-wrap ">
+            <span class="fw-bold my-4 name-head">Name</span>
+            <span class="fw-bold my-4 amount-head">Amount</span>
+            <span class="fw-bold my-4 category-head">Category</span>
+            <span class="fw-bold my-4 date-head">Date</span>
+            <span class="fw-bold my-4 actions-head">Actions</span>
+        </div>
+        <hr class="m-1">
+        {% for expense in expenses %}
+        <div class="expense-row flex flex-wrap p-3">
+            <span class="fw-bold">{{expense.name}}</span>
+            <span class="fw-bold"><i class="fa-solid fa-indian-rupee-sign me-2"></i>{{expense.amount|intcomma}}</span>
+            <span class="fw-bold">{{expense.category}}</span>
+            <span class="fw-bold">{{expense.date|naturalday}}</span>
+            <span class="fw-bold"><a href="{% url 'edit' expense.id  %}" class="btn btn-warning">Edit<i class="fa-regular fa-pen-to-square ms-2"></i></a><a href="{% url 'delete' expense.id  %}" class="ms-5 btn btn-danger">Delete<i class="fa-solid fa-trash-can ms-2"></i></a></span>
+        </div>
+        {% endfor %}
+        <hr>
+        <!-- Displaying total sum -->
+        <div class="total_expense ms-5 mb-3">
+            <span class="fw-bold" style="margin-left: 100px;">Total Expense : </span>
+            <span class="fw-bold text-success">
+                {{total_expenses.amount__sum|intcomma}}<i class="fa-solid fa-indian-rupee-sign ms-1" style="color: #2ec27e;"></i>
+             </span>
+        </div>
+        <hr style="color: transparent;">
+    </div>
+    <div class="expense_cards ms-5 mb-5 ps-5" style="display: flex; justify-content:space-between;width:1715px;height:auto;">
+        <div class="shadow-lg  card ms" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title">Yearly Total Expense</h5>
+            <h6 class="card-subtitle my-2 text-body-secondary"><span id="year"></span></h6>
+            <p class="card-text">Expense amount : {{yearly_sum.amount__sum|intcomma}}<i class="fa-solid fa-indian-rupee-sign ms-1" ></i></p>
+            </div>
+        </div>
+
+        <div class="shadow-lg  card ms" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title">Monthly Total Expense</h5>
+            <h6 class="card-subtitle my-2 text-body-secondary">{% now "F" %}</h6>
+            <p class="card-text">Expense amount : {{monthly_sum.amount__sum|intcomma}}<i class="fa-solid fa-indian-rupee-sign ms-1" ></i></p>
+            </div>
+        </div>
+
+        <div class="shadow-lg  card ms" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title">Weekly Total Expense</h5>
+            <h6 class="card-subtitle my-2 " style="color: transparent;">dfsa</h6>
+            <p class="card-text">Expense amount : {{weekly_sum.amount__sum|intcomma}}<i class="fa-solid fa-indian-rupee-sign ms-1" ></i></p>
+            </div>
+        </div>
+
+        <div class="shadow-lg card ms" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title">Total Expense</h5>
+            <h6 class="card-subtitle my-2 " style="color: transparent;">dfsa</h6>
+            <p class="card-text">Expense amount : {{total_expenses.amount__sum|intcomma}}<i class="fa-solid fa-indian-rupee-sign ms-1" ></i></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex">
+        <div class="shadow-lg m-5" style="width: 50%;">
+            <div class="d-flex flex-wrap fw-bold px-5 py-3">
+                <span>Past 30 days sum expenses</span>
+            </div>
+            <hr>
+            <div id="30-days-table">
+                {% for daily_sum in daily_sums %}
+                    <div class="d-flex flex-wrap px-5 py-2">
+                        <span>
+                            {{daily_sum.date}}
+                        </span>
+                    </div>
+                    <div class="d-flex flex-wrap px-5 py-2">
+                        <span class="text-success">
+                            {{daily_sum.sum}}<i class="fa-solid fa-indian-rupee-sign ms-1" ></i>
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="shadow-lg m-5" style="width: 50%;">
+            <div class="d-flex flex-wrap fw-bold px-5 py-3">
+                <span>Categorical expenses</span>
+            </div>
+            <hr>
+            <div id="cat-sum-table">
+                {% for categorical_sum in categorical_sums %}
+                    <div class="d-flex flex-wrap px-5 py-2">
+                        <span>
+                            {{categorical_sum.category}}
+                        </span>
+                    </div>
+                    <div class="d-flex flex-wrap px-5 py-2 mb-3">
+                        <span class="text-success">
+                            {{categorical_sum.sum}}<i class="fa-solid fa-indian-rupee-sign ms-1" ></i>
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div class="shadow-lg mx-5" style="width: 50%;">
+            <h5 class="m-5">Expense spread across categories</h5>
+            <canvas id="myChart" class="m-5"></canvas>
+        </div>
+        <div class="shadow-lg me-5" style="width: 50%;">
+            <h5 class="m-5">Daily expense Sum</h5>
+            <canvas id="myChart1" class="m-5"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
+    <script>
+
+        //Chart part
+        
+        const cats=[]
+        const cat_sums=[]
+
+        const catSumDiv=document.getElementById('cat-sum-table').getElementsByTagName('div')
+
+        for(i=0;i<catSumDiv.length;i++){
+            if(i%2==1){
+                cat_sums.push(catSumDiv[i].innerText)
+            }else{
+                cats.push(catSumDiv[i].innerText)
+            }
+        }
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: cats,
+                datasets: [{
+                    label: 'Expense acrows categories',
+                    data: cat_sums,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Daily expense sum chart
+
+        const dates=[]
+        const date_sums=[]
+        const DailySumDiv=document.getElementById('30-days-table').getElementsByTagName('div')
+
+        for(i=0;i<DailySumDiv.length;i++){
+            if(i%2==1){
+                date_sums.push(DailySumDiv[i].innerText)
+            }else{
+                dates.push(DailySumDiv[i].innerText)
+            }
+        }
+
+        var ctx1 = document.getElementById('myChart1').getContext('2d');
+        var myChart1 = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Expense acrows categories',
+                    data: date_sums,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+
+        // To get the current Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // To get teh current month
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        const currentMonth = new Date().getMonth(); // Returns 0-based month index
+        document.getElementById('month').textContent = monthNames[currentMonth];
+
+    </script>
+    {% endblock %}
+</body> 
+</html>

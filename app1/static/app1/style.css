@@ -1,0 +1,33 @@
+div.expense-header, div.expense-row{
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+div.expense-header, div.expense-row span{
+    display: table-cell;
+    text-align: center;
+}
+div.expense-header span{
+    font-size: 20px;
+}
+.name-head{
+    padding-left: 165px;
+}
+.amount-head{
+    padding-left: 280px;
+}
+.category-head{
+    padding-left: 265px;
+}
+.date-head{
+    padding-left: 270px;
+}
+.actions-head{
+    padding-left: 290px;
+}
+label{
+    font-size: 20px;
+}
+.box{
+    width: calc(100%/4);
+}

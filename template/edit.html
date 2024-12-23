@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block body %}
+<form class="shadow-lg m-5" method="POST">
+    {% csrf_token %}
+    <div  class="form-container p-5 d-flex">
+        <div class="mx-5 box">
+            <div class="mb-3">
+                <label class="fw-bold">Expense Name</label>
+            </div>
+            <div class="border inp">{{expense_form.name}}</div>
+        </div>
+        <div class="mx-5 box">
+            <div class="mb-3">
+                <label class="fw-bold">Expense Amount</label>
+            </div>
+            <div class="border inp">{{expense_form.amount}}</div>
+        </div>
+        <div class="mx-5 box">
+            <div class="mb-3">
+                <label class="fw-bold">Expense Category</label>
+            </div>
+            <div class="border inp">{{expense_form.category}}</div>
+        </div>
+        <div class="mx-5 mt-4 box">
+            <button class="btn btn-success px-3 py-2 rounded text-white fw-bold" type="submit">Update Data</button>
+            <a href="{% url 'index' %}" class="btn btn-primary px-3 py-2 rounded text-white fw-bold ms-3">Back</a>
+        </div>
+    </div>
+</form>
+{% endblock %}
