@@ -28,6 +28,11 @@ def indexPage(request):
     data=expense.objects.filter(date__gt=last_week)
     weekly_sum=data.aggregate(Sum('amount'))
 
+    # Logic to calculate daily expense
+    today_exp=datetime.date.today()-datetime.timedelta(days=1)
+    data=expense.objects.filter(date__gt=today_exp)
+    today_sum=data.aggregate(Sum('amount'))
+
     # Expense on particular date
     daily_sums=expense.objects.filter().values('date').order_by('date').annotate(sum=Sum('amount'))
 
@@ -35,7 +40,7 @@ def indexPage(request):
     categorical_sums=expense.objects.filter().values('category').order_by('category').annotate(sum=Sum('amount'))
     
     expense_form=ExpenseForm()
-    return render(request,'index.html',{'expense_form':expense_form,'expenses':expenses,'total_expenses':total_expenses,'yearly_sum':yearly_sum,'weekly_sum':weekly_sum,'monthly_sum':monthly_sum,'daily_sums':daily_sums,'categorical_sums':categorical_sums})
+    return render(request,'index.html',{'expense_form':expense_form,'expenses':expenses,'total_expenses':total_expenses,'yearly_sum':yearly_sum,'weekly_sum':weekly_sum,'monthly_sum':monthly_sum,'daily_sums':daily_sums,'categorical_sums':categorical_sums,'today_sum':today_sum})
 
 def edit(request,id):
     Expense=expense.objects.get(id=id)
